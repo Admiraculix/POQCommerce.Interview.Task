@@ -1,6 +1,6 @@
-namespace PoqCommerce.Api.Models.Contracts.Requests
+namespace PoqCommerce.Application.DTOs
 {
-    public class FilterObjectRequest
+    public class FilterObject
     {
         public double MinPrice { get; set; }
         public double MaxPrice { get; set; }

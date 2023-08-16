@@ -15,4 +15,8 @@
     <ProjectReference Include="..\PoqCommerce.Application\PoqCommerce.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Contracts\Requests\" />
+  </ItemGroup>
+
 </Project>

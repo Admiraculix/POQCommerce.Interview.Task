@@ -19,9 +19,14 @@ namespace PoqCommerce.Api.Controllers
         }
 
         [HttpGet("filter")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetFilterProducts(
+            [FromQuery] double? minprice = null,
+            [FromQuery] double? maxprice = null,
+            [FromQuery] string size = null,
+            [FromQuery] string highlight = null)
         {
-            throw new NotImplementedException();
+            var result = _productService.FilterProducts(minprice, maxprice, size, highlight);
+            return Ok(result);
         }
     }
 }

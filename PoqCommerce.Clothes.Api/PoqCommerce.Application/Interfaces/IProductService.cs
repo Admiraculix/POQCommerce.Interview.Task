@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PoqCommerce.Application.Interfaces
+﻿namespace PoqCommerce.Application.Interfaces
 {
     public interface IProductService
     {
+        object FilterProducts(double? minprice, double? maxprice, string size, string highlight);
     }
 }
