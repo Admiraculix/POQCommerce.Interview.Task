@@ -1,4 +1,7 @@
 
+using PoqCommerce.Application;
+using PoqCommerce.Application.Interfaces;
+
 namespace PoqCommerce.Api
 {
     public class Program
@@ -13,6 +16,7 @@ namespace PoqCommerce.Api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddTransient<IProductService, ProductService>();
 
             var app = builder.Build();
 
