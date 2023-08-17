@@ -1,4 +1,5 @@
 
+using AspNetCoreRateLimit;
 using PoqCommerce.Application.Extensions;
 using PoqCommerce.Mocky.Io.Extensions;
 using Serilog;
@@ -23,9 +24,16 @@ namespace PoqCommerce.Api
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
-                .WriteTo.File(Path.Combine("Logs","log.txt"), rollingInterval: RollingInterval.Day) // Change the filename and interval as needed
+                .WriteTo.File(Path.Combine("Logs","log.txt"), rollingInterval: RollingInterval.Day)
                 .CreateLogger();
             builder.Logging.AddSerilog();
+
+            // Request Rate limiting
+            builder.Services.AddMemoryCache();
+            builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+            builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
+            builder.Services.AddInMemoryRateLimiting();
+            builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
             var app = builder.Build();
 
@@ -40,8 +48,8 @@ namespace PoqCommerce.Api
 
             app.UseAuthorization();
 
-
             app.MapControllers();
+            app.UseIpRateLimiting();
 
             app.Run();
         }
