@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using PoqCommerce.Application.Interfaces;
-using PoqCommerce.Mocky.Io.Configurations;
-using PoqCommerce.Application.Models.Responses;
 using Newtonsoft.Json;
+using PoqCommerce.Application.Interfaces;
+using PoqCommerce.Application.Models.Responses;
+using PoqCommerce.Mocky.Io.Configurations;
 
 namespace PoqCommerce.Mocky.Io
 {
@@ -21,24 +21,34 @@ namespace PoqCommerce.Mocky.Io
 
         public async Task<MockyProductsResponse> GetAllProductsAsync()
         {
-            using var httpRequest = new HttpRequestMessage()
+            MockyProductsResponse responseContent = null;
+            try
             {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"{_httpClient.BaseAddress}{_config.ProductUrl}"),
-            };
+                using var httpRequest = new HttpRequestMessage()
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri($"{_httpClient.BaseAddress}{_config.ProductUrl}"),
+                };
 
-            using var response = await _httpClient.SendAsync(httpRequest);
-            var responseContentString = await response.Content?.ReadAsStringAsync();
+                using var response = await _httpClient.SendAsync(httpRequest);
+                var responseContentString = await response.Content?.ReadAsStringAsync();
 
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new HttpRequestException();
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogError($"{nameof(GetAllProductsAsync)} failed to get all products: {responseContentString}");
+                    throw new HttpRequestException();
+                }
+
+                responseContent = JsonConvert.DeserializeObject<MockyProductsResponse>(responseContentString);
+                _logger.LogInformation($"{nameof(GetAllProductsAsync)} successfully get all product data!");
+
+                return responseContent;
             }
-
-            var responseContent = JsonConvert.DeserializeObject<MockyProductsResponse>(responseContentString);
-
-            return responseContent;
+            catch (Exception ex)
+            {
+               _logger.LogError($"{nameof(GetAllProductsAsync)} failed to get all products: {ex.Message} ;\n {ex.StackTrace}");
+                return responseContent;
+            }
         }
-
     }
 }

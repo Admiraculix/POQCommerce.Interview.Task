@@ -25,8 +25,19 @@ namespace PoqCommerce.Api.Controllers
             [FromQuery] string size = null,
             [FromQuery] string highlight = null)
         {
-            var result = await _productService.FilterProducts(minprice, maxprice, size, highlight);
-            return Ok(result);
+            try
+            {
+                var result = await _productService.FilterProducts(minprice, maxprice, size, highlight);
+                _logger.LogInformation($"{nameof(GetFilterProducts)} successfully was filtered");
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetFilterProducts)} failed to get products: {ex.Message} ;\n {ex.StackTrace}");
+                return Problem("Something went wrong! Please try again later.");
+            }
+
         }
     }
 }
