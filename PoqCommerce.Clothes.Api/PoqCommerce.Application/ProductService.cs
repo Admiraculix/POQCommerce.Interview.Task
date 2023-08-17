@@ -1,5 +1,5 @@
-﻿using PoqCommerce.Application.DTOs;
-using PoqCommerce.Application.Interfaces;
+﻿using PoqCommerce.Application.Interfaces;
+using PoqCommerce.Application.Models.DTOs;
 using PoqCommerce.Domain;
 using System.Text.RegularExpressions;
 
@@ -7,7 +7,8 @@ namespace PoqCommerce.Application
 {
     public class ProductService : IProductService
     {
-        private readonly List<Product> _products = new List<Product>
+        private readonly  IMockyHttpClient _httpClient;
+        private List<Product> _products = new List<Product>
         {
             new Product { Title = "A Red Trouser", Price = 10, Sizes = new List<string> { "small", "medium", "large" }, Description = "This trouser perfectly pairs with a green shirt." },
             new Product { Title = "A Red Trouser", Price = 50, Sizes = new List<string> { "small", }, Description = "This trouser perfectly pairs with a red shirt." },
@@ -24,8 +25,17 @@ namespace PoqCommerce.Application
             new Product { Title = "A Orange Trouser", Price = 25, Sizes = new List<string> { "medium", }, Description = "This trouser perfectly pairs with a white shirt." },
         };
 
-        public object FilterProducts(double? minprice, double? maxprice, string size, string highlight)
+        public ProductService(IMockyHttpClient httpClient)
         {
+            _httpClient = httpClient;
+        }
+
+
+        public async Task<FilteredProductsDto> FilterProducts(double? minprice, double? maxprice, string size, string highlight)
+        {
+            var response = await _httpClient.GetAllProductsAsync();
+            _products = response.Products.ToList();
+
             var filteredProducts = _products;
 
             if (minprice.HasValue)
@@ -48,7 +58,7 @@ namespace PoqCommerce.Application
                 CommonWords = GetCommonWords()
             };
 
-            var response = new FilteredProductsDto
+            var result = new FilteredProductsDto
             {
                 Products = filteredProducts.Select(p => new Product
                 {
@@ -60,7 +70,7 @@ namespace PoqCommerce.Application
                 Filter = filterObject
             };
 
-            return response;
+            return result;
         }
 
         private List<Product> ApplyHighlight(List<Product> products, string highlight)

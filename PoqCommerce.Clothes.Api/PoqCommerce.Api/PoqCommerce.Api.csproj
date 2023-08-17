@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PoqCommerce.Application\PoqCommerce.Application.csproj" />
+    <ProjectReference Include="..\PoqCommerce.Mocky.Io\PoqCommerce.Mocky.Io.csproj" />
   </ItemGroup>
 
   <ItemGroup>

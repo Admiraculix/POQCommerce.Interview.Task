@@ -25,7 +25,7 @@ namespace PoqCommerce.Api.Controllers
             [FromQuery] string size = null,
             [FromQuery] string highlight = null)
         {
-            var result = _productService.FilterProducts(minprice, maxprice, size, highlight);
+            var result = await _productService.FilterProducts(minprice, maxprice, size, highlight);
             return Ok(result);
         }
     }

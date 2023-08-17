@@ -1,6 +1,6 @@
 
-using PoqCommerce.Application;
-using PoqCommerce.Application.Interfaces;
+using PoqCommerce.Application.Extensions;
+using PoqCommerce.Mocky.Io.Extensions;
 
 namespace PoqCommerce.Api
 {
@@ -16,7 +16,8 @@ namespace PoqCommerce.Api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddTransient<IProductService, ProductService>();
+            builder.Services.RegisterApplicationDependencies(builder.Configuration);
+            builder.Services.RegisterMockyIoClients(builder.Configuration);
 
             var app = builder.Build();
 

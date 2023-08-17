@@ -1,6 +1,6 @@
 ﻿using PoqCommerce.Domain;
 
-namespace PoqCommerce.Application.DTOs
+namespace PoqCommerce.Application.Models.DTOs
 {
     public class FilteredProductsDto
     {
