@@ -2,7 +2,7 @@ using FluentAssertions;
 using NetArchTest.Rules;
 using System.Reflection;
 
-namespace PoqCommerce.Architecture.Tests
+namespace PoqCommerce.Tests.Architecture
 {
     public class ArchitectureTest
     {
@@ -71,6 +71,28 @@ namespace PoqCommerce.Architecture.Tests
             var testResult = Types
             .InAssembly(assembly)
             .Should()
+            .HaveDependencyOnAny(otherProjects)
+            .GetResult();
+
+            //Assert
+            testResult.IsSuccessful.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Infrastructure_Should_Not_HaveDependencyOnOtherProjects()
+        {
+            // Arrange
+            Assembly assembly = Assembly.Load(InfrastructureNamespace);
+
+            var otherProjects = new[] {
+                PresentationNamespace,
+                DomainNamespace
+            };
+
+            // Act
+            var testResult = Types
+            .InAssembly(assembly)
+            .ShouldNot()
             .HaveDependencyOnAll(otherProjects)
             .GetResult();
 

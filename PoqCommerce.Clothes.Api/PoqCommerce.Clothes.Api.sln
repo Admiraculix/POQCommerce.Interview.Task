@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoqCommerce.Domain", "PoqCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoqCommerce.Mocky.Io", "PoqCommerce.Mocky.Io\PoqCommerce.Mocky.Io.csproj", "{45D6C455-A632-4C45-951B-BC3F73583E99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoqCommerce.Architecture.Tests", "PoqCommerce.Architecture.Tests\PoqCommerce.Architecture.Tests.csproj", "{19C64031-F881-4690-B68C-FE27616814A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoqCommerce.Tests.Architecture", "PoqCommerce.Tests.Architecture\PoqCommerce.Tests.Architecture.csproj", "{BC85E4BF-4FB0-4712-839E-00E8748E683B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,10 +53,10 @@ Global
 		{45D6C455-A632-4C45-951B-BC3F73583E99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45D6C455-A632-4C45-951B-BC3F73583E99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45D6C455-A632-4C45-951B-BC3F73583E99}.Release|Any CPU.Build.0 = Release|Any CPU
-		{19C64031-F881-4690-B68C-FE27616814A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{19C64031-F881-4690-B68C-FE27616814A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{19C64031-F881-4690-B68C-FE27616814A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{19C64031-F881-4690-B68C-FE27616814A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC85E4BF-4FB0-4712-839E-00E8748E683B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC85E4BF-4FB0-4712-839E-00E8748E683B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC85E4BF-4FB0-4712-839E-00E8748E683B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC85E4BF-4FB0-4712-839E-00E8748E683B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,7 +73,7 @@ Global
 		{6FCEA4C3-E1CC-4F48-BABE-CA0E232EF629} = {C7816811-E848-4AF9-A210-4BF4AC633049}
 		{23763936-046A-4C57-BF9D-5B268A34E322} = {C7816811-E848-4AF9-A210-4BF4AC633049}
 		{45D6C455-A632-4C45-951B-BC3F73583E99} = {AA6920A7-5859-4C9C-9B2A-9D8BB332B9DC}
-		{19C64031-F881-4690-B68C-FE27616814A0} = {0A586157-CE11-4A33-9825-A159E6BC6C5B}
+		{BC85E4BF-4FB0-4712-839E-00E8748E683B} = {0A586157-CE11-4A33-9825-A159E6BC6C5B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FB08CCB1-2E6F-400F-ACA9-B4B6768C2260}
