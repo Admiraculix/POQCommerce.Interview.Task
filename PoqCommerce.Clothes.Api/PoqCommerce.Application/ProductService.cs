@@ -8,7 +8,7 @@ namespace PoqCommerce.Application
     public class ProductService : IProductService
     {
         private readonly  IMockyHttpClient _httpClient;
-        private List<Product> _products = new List<Product>
+        private List<Product> _products = new List<Product> //!This is for testing purposes
         {
             new Product { Title = "A Red Trouser", Price = 10, Sizes = new List<string> { "small", "medium", "large" }, Description = "This trouser perfectly pairs with a green shirt." },
             new Product { Title = "A Red Trouser", Price = 50, Sizes = new List<string> { "small", }, Description = "This trouser perfectly pairs with a red shirt." },
@@ -29,7 +29,6 @@ namespace PoqCommerce.Application
         {
             _httpClient = httpClient;
         }
-
 
         public async Task<FilteredProductsDto> FilterProducts(double? minprice, double? maxprice, string size, string highlight)
         {
