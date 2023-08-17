@@ -1,6 +1,7 @@
 ﻿using PoqCommerce.Application.DTOs;
 using PoqCommerce.Application.Interfaces;
 using PoqCommerce.Domain;
+using System.Text.RegularExpressions;
 
 namespace PoqCommerce.Application
 {
@@ -10,7 +11,17 @@ namespace PoqCommerce.Application
         {
             new Product { Title = "A Red Trouser", Price = 10, Sizes = new List<string> { "small", "medium", "large" }, Description = "This trouser perfectly pairs with a green shirt." },
             new Product { Title = "A Red Trouser", Price = 50, Sizes = new List<string> { "small", }, Description = "This trouser perfectly pairs with a red shirt." },
-            new Product { Title = "A Red Trouser", Price = 5, Sizes = new List<string> {  "large" }, Description = "This trouser perfectly pairs with a blue shirt." },
+            new Product { Title = "A Red Trouser", Price = 5, Sizes = new List<string> {  "large" }, Description = "This trouser perfectly pairs with a yellow shirt." },
+            new Product { Title = "A Red Trouser", Price = 1, Sizes = new List<string> { "medium", "large" }, Description = "This trouser perfectly pairs with a blue shirt." },
+            new Product { Title = "A Blue Trouser", Price = 8, Sizes = new List<string> { "small", "medium", "large" }, Description = "This trouser perfectly pairs with a orange shirt." },
+            new Product { Title = "A Blue Trouser", Price = 55, Sizes = new List<string> { "small", }, Description = "This trouser perfectly pairs with a red shirt." },
+            new Product { Title = "A Blue Trouser", Price = 5, Sizes = new List<string> {  "medium", "large" }, Description = "This trouser perfectly pairs with a light blue shirt." },
+            new Product { Title = "A Blue Trouser", Price = 10, Sizes = new List<string> { "small", "medium", "large" }, Description = "This trouser perfectly pairs with a green shirt." },
+            new Product { Title = "A Green Trouser", Price = 150, Sizes = new List<string> { "small", }, Description = "This trouser perfectly pairs with a dark red shirt." },
+            new Product { Title = "A Green Trouser", Price = 7, Sizes = new List<string> { "medium", "large" }, Description = "This trouser perfectly pairs with a magenta shirt." },
+            new Product { Title = "A Green Trouser", Price = 70, Sizes = new List<string> { "small", "medium", "large" }, Description = "This trouser perfectly pairs with a cyan shirt." },
+            new Product { Title = "A Green Trouser", Price = 20, Sizes = new List<string> { "small", }, Description = "This trouser perfectly pairs with a black shirt." },
+            new Product { Title = "A Orange Trouser", Price = 25, Sizes = new List<string> { "medium", }, Description = "This trouser perfectly pairs with a white shirt." },
         };
 
         public object FilterProducts(double? minprice, double? maxprice, string size, string highlight)
@@ -26,6 +37,9 @@ namespace PoqCommerce.Application
             if (!string.IsNullOrWhiteSpace(size))
                 filteredProducts = filteredProducts.Where(p => p.Sizes.Contains(size)).ToList();
 
+            if (!string.IsNullOrWhiteSpace(highlight))
+                filteredProducts = ApplyHighlight(filteredProducts, highlight);
+
             var filterObject = new FilterObject
             {
                 MinPrice = _products.Min(p => p.Price),
@@ -34,14 +48,6 @@ namespace PoqCommerce.Application
                 CommonWords = GetCommonWords()
             };
 
-            foreach (var product in filteredProducts)
-            {
-                if (!string.IsNullOrWhiteSpace(highlight))
-                {
-                    var highlightedDescription = HighlightWords(product.Description, highlight);
-                    product.Description = highlightedDescription;
-                }
-            }
             var response = new FilteredProductsDto
             {
                 Products = filteredProducts.Select(p => new Product
@@ -57,22 +63,42 @@ namespace PoqCommerce.Application
             return response;
         }
 
+        private List<Product> ApplyHighlight(List<Product> products, string highlight)
+        {
+            var highlightedWords = highlight.Split(',').Select(h => h.Trim().ToLower()).ToList();
+
+            foreach (var product in products)
+            {
+                foreach (var highlightedWord in highlightedWords)
+                {
+                    product.Description = product.Description.Replace(highlightedWord, $"<em>{highlightedWord}</em>", StringComparison.OrdinalIgnoreCase);
+                }
+            }
+
+            return products;
+        }
+
         private List<string> GetCommonWords()
         {
             var wordFrequency = new Dictionary<string, int>();
 
             foreach (var product in _products)
             {
-                var words = product.Description.ToLower().Split(new[] { ' ', '.', ',', ';', ':', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
+                var descriptionWithoutTags = StripHtmlTags(product.Description.ToLower());
+                var words = descriptionWithoutTags.Split(new[] { ' ', '.', ',', ';', ':', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
+
                 foreach (var word in words)
                 {
-                    if (!wordFrequency.ContainsKey(word))
+                    if (word.Length > 2) // Exclude words with less than three characters
                     {
-                        wordFrequency[word] = 1;
-                    }
-                    else
-                    {
-                        wordFrequency[word]++;
+                        if (!wordFrequency.ContainsKey(word))
+                        {
+                            wordFrequency[word] = 1;
+                        }
+                        else
+                        {
+                            wordFrequency[word]++;
+                        }
                     }
                 }
             }
@@ -86,16 +112,9 @@ namespace PoqCommerce.Application
             return mostCommonWords;
         }
 
-        private string HighlightWords(string description, string highlight)
+        private string StripHtmlTags(string input)
         {
-            var highlightedWords = highlight.Split(',').Select(h => h.Trim().ToLower()).ToList();
-            foreach (var highlightedWord in highlightedWords)
-            {
-                description = description.Replace(highlightedWord, $"<em>{highlightedWord}</em>");
-            }
-
-            return description;
+            return Regex.Replace(input, "<.*?>", string.Empty);
         }
-
     }
 }
