@@ -1,7 +1,9 @@
 
 using AspNetCoreRateLimit;
 using AutoMapper.EquivalencyExpression;
+using FluentValidation.AspNetCore;
 using PoqCommerce.Api.AutoMapper.Profiles;
+using PoqCommerce.Api.Validators;
 using PoqCommerce.Application.Extensions;
 using PoqCommerce.Mocky.Io.Extensions;
 using Serilog;
@@ -37,6 +39,9 @@ namespace PoqCommerce.Api
             builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
             builder.Services.AddInMemoryRateLimiting();
             builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+
+            // Register FluentValition
+            builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<FilterObjectValidator>());
 
             // Register AutoMapper
             builder.Services.AddAutoMapper(
