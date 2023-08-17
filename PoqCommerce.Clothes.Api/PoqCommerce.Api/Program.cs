@@ -1,8 +1,11 @@
 
 using AspNetCoreRateLimit;
+using AutoMapper.EquivalencyExpression;
+using PoqCommerce.Api.AutoMapper.Profiles;
 using PoqCommerce.Application.Extensions;
 using PoqCommerce.Mocky.Io.Extensions;
 using Serilog;
+using System.Reflection;
 
 namespace PoqCommerce.Api
 {
@@ -24,7 +27,7 @@ namespace PoqCommerce.Api
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
-                .WriteTo.File(Path.Combine("Logs","log.txt"), rollingInterval: RollingInterval.Day)
+                .WriteTo.File(Path.Combine("Logs", "log.txt"), rollingInterval: RollingInterval.Day)
                 .CreateLogger();
             builder.Logging.AddSerilog();
 
@@ -34,6 +37,14 @@ namespace PoqCommerce.Api
             builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
             builder.Services.AddInMemoryRateLimiting();
             builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+
+            // Register AutoMapper
+            builder.Services.AddAutoMapper(
+                 (cfg) =>
+                 {
+                     cfg.AddCollectionMappers();
+                 },
+                 typeof(RequestToDtoProfile).GetTypeInfo().Assembly);
 
             var app = builder.Build();
 
@@ -53,5 +64,6 @@ namespace PoqCommerce.Api
 
             app.Run();
         }
+
     }
 }

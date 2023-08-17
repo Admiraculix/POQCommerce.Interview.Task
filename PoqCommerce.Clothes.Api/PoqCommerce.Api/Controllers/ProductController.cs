@@ -1,5 +1,8 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using PoqCommerce.Api.Models.Contracts.Requests;
 using PoqCommerce.Application.Interfaces;
+using PoqCommerce.Application.Models;
 
 namespace PoqCommerce.Api.Controllers
 {
@@ -7,8 +10,10 @@ namespace PoqCommerce.Api.Controllers
     [Route("[controller]")]
     public class ProductController : ControllerBase
     {
+        private IMapper _mapper;
         private readonly ILogger<ProductController> _logger;
         private readonly IProductService _productService;
+        protected IMapper Mapper => _mapper ??= HttpContext.RequestServices.GetService<IMapper>();
 
         public ProductController(
             ILogger<ProductController> logger,
@@ -19,15 +24,12 @@ namespace PoqCommerce.Api.Controllers
         }
 
         [HttpGet("filter")]
-        public async Task<IActionResult> GetFilterProducts(
-            [FromQuery] double? minprice = null,
-            [FromQuery] double? maxprice = null,
-            [FromQuery] string size = null,
-            [FromQuery] string highlight = null)
+        public async Task<IActionResult> GetFilterProducts([FromQuery] FilterObjectRequest request)
         {
             try
             {
-                var result = await _productService.FilterProducts(minprice, maxprice, size, highlight);
+                var dtoRequest = Mapper.Map<FilterObject>(request);
+                var result = await _productService.FilterProducts(dtoRequest);
                 _logger.LogInformation($"{nameof(GetFilterProducts)} successfully was filtered");
 
                 return Ok(result);

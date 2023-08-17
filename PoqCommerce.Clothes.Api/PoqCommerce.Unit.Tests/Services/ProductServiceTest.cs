@@ -2,6 +2,7 @@ using FakeItEasy;
 using FluentAssertions;
 using PoqCommerce.Application;
 using PoqCommerce.Application.Interfaces;
+using PoqCommerce.Application.Models;
 using PoqCommerce.Application.Models.Responses;
 using PoqCommerce.Domain;
 
@@ -38,10 +39,12 @@ namespace PoqCommerce.Unit.Tests.Services
                 Products = _products
             };
 
+            var filter = new FilterObject { MinPrice = 15, MaxPrice = 25, Size = "medium", Highlight = "red" };
+
             A.CallTo(() => httpClient.GetAllProductsAsync()).Returns(fakeResponse);
 
             // Act
-            var result = await productService.FilterProducts(15, 25, "medium", "red");
+            var result = await productService.FilterProducts(filter);
 
             // Assert
             result.Should().NotBeNull();
@@ -65,10 +68,12 @@ namespace PoqCommerce.Unit.Tests.Services
                 Products = _products
             };
 
+            var filter = new FilterObject();
+
             A.CallTo(() => httpClient.GetAllProductsAsync()).Returns(fakeResponse);
 
             // Act
-            var result = await productService.FilterProducts(null, null, null, null);
+            var result = await productService.FilterProducts(filter);
 
             // Assert
             result.Should().NotBeNull();

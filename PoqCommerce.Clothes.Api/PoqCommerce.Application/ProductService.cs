@@ -1,4 +1,5 @@
 ﻿using PoqCommerce.Application.Interfaces;
+using PoqCommerce.Application.Models;
 using PoqCommerce.Application.Models.DTOs;
 using PoqCommerce.Domain;
 using System.Text.RegularExpressions;
@@ -15,26 +16,26 @@ namespace PoqCommerce.Application
             _httpClient = httpClient;
         }
 
-        public async Task<FilteredProductsDto> FilterProducts(double? minprice, double? maxprice, string size, string highlight)
+        public async Task<FilteredProductsDto> FilterProducts(FilterObject filter)
         {
             var response = await _httpClient.GetAllProductsAsync();
             _products = response.Products.ToList();
 
             var filteredProducts = _products;
 
-            if (minprice.HasValue)
-                filteredProducts = filteredProducts.Where(p => p.Price >= minprice.Value).ToList();
+            if (filter.MinPrice.HasValue)
+                filteredProducts = filteredProducts.Where(p => p.Price >= filter.MinPrice.Value).ToList();
 
-            if (maxprice.HasValue)
-                filteredProducts = filteredProducts.Where(p => p.Price <= maxprice.Value).ToList();
+            if (filter.MaxPrice.HasValue)
+                filteredProducts = filteredProducts.Where(p => p.Price <= filter.MaxPrice.Value).ToList();
 
-            if (!string.IsNullOrWhiteSpace(size))
-                filteredProducts = filteredProducts.Where(p => p.Sizes.Contains(size)).ToList();
+            if (!string.IsNullOrWhiteSpace(filter.Size))
+                filteredProducts = filteredProducts.Where(p => p.Sizes.Contains(filter.Size)).ToList();
 
-            if (!string.IsNullOrWhiteSpace(highlight))
-                filteredProducts = ApplyHighlight(filteredProducts, highlight);
+            if (!string.IsNullOrWhiteSpace(filter.Highlight))
+                filteredProducts = ApplyHighlight(filteredProducts, filter.Highlight);
 
-            var filterObject = new FilterObject
+            var filterObject = new FilterObjectDto
             {
                 MinPrice = _products.Min(p => p.Price),
                 MaxPrice = _products.Max(p => p.Price),

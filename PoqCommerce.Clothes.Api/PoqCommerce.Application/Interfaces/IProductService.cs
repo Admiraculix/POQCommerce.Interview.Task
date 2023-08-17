@@ -1,9 +1,10 @@
-﻿using PoqCommerce.Application.Models.DTOs;
+﻿using PoqCommerce.Application.Models;
+using PoqCommerce.Application.Models.DTOs;
 
 namespace PoqCommerce.Application.Interfaces
 {
     public interface IProductService
     {
-        Task<FilteredProductsDto> FilterProducts(double? minprice, double? maxprice, string size, string highlight);
+        Task<FilteredProductsDto> FilterProducts(FilterObject filter);
     }
 }
