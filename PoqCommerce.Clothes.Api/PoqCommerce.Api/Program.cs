@@ -6,6 +6,7 @@ using PoqCommerce.Api.AutoMapper.Profiles;
 using PoqCommerce.Api.Validators;
 using PoqCommerce.Application.Extensions;
 using PoqCommerce.Mocky.Io.Extensions;
+using PoqCommerce.Persistence.Extensions;
 using Serilog;
 using System.Reflection;
 
@@ -24,6 +25,7 @@ namespace PoqCommerce.Api
             builder.Services.AddSwaggerGen();
             builder.Services.RegisterApplicationDependencies(builder.Configuration);
             builder.Services.RegisterMockyIoClients(builder.Configuration);
+            builder.Services.RegisterPersistenceDependencies(builder.Configuration);
 
             // Configure Serilog
             Log.Logger = new LoggerConfiguration()
