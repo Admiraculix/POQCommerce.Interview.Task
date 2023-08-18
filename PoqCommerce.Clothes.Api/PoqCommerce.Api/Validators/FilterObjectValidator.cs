@@ -5,13 +5,16 @@ namespace PoqCommerce.Api.Validators
 {
     public class FilterObjectValidator : AbstractValidator<FilterObjectRequest>
     {
+        private const string CantBeNegativeNumber = "Can't be negative number";
+        private const string InvalidSize = "Invalid size. Allowed values: small, medium, large";
+
         public FilterObjectValidator()
         {
-            RuleFor(filter => filter.MinPrice).GreaterThanOrEqualTo(0).WithMessage("Can't be negative number");
-            RuleFor(filter => filter.MaxPrice).GreaterThan(0).WithMessage("Can't be negative number");
+            RuleFor(filter => filter.MinPrice).GreaterThanOrEqualTo(0).WithMessage(CantBeNegativeNumber);
+            RuleFor(filter => filter.MaxPrice).GreaterThan(0).WithMessage(CantBeNegativeNumber);
             RuleFor(filter => filter.Size)
                 .Must(size => string.IsNullOrEmpty(size) || IsValidSize(size))
-                .WithMessage("Invalid size. Allowed values: small, medium, large");
+                .WithMessage(InvalidSize);
         }
 
         private bool IsValidSize(string size)
