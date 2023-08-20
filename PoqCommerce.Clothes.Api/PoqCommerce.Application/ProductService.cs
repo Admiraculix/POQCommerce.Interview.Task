@@ -8,15 +8,17 @@ namespace PoqCommerce.Application
 {
     public class ProductService : IProductService
     {
-        private readonly  IMockyHttpClient _httpClient;
+        private readonly IMockyHttpClient _httpClient;
         private List<Product> _products = new List<Product>();
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ProductService(IMockyHttpClient httpClient)
+        public ProductService(IMockyHttpClient httpClient, IUnitOfWork unitOfWork)
         {
             _httpClient = httpClient;
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task<FilteredProductsDto> FilterProducts(FilterObject filter)
+        public async Task<FilteredProductsDto> FilterProductsAsync(FilterObject filter)
         {
             var response = await _httpClient.GetAllProductsAsync();
             _products = response.Products.ToList();
@@ -54,6 +56,24 @@ namespace PoqCommerce.Application
                 }).ToList(),
                 Filter = filterObject
             };
+
+            return result;
+        }
+
+        public async Task<SeedResultDto> SeedProductsAsync()
+        {
+            var enitites = _unitOfWork.Product.GetAll();
+            if (enitites.Any())
+            {
+                return new SeedResultDto { Count  = enitites.Count()} ;
+            }
+
+            var response = await _httpClient.GetAllProductsAsync();
+            _products = response.Products.ToList();
+
+            _unitOfWork.Product.BulkInsert(_products);
+            _unitOfWork.Commit();
+            var result = new SeedResultDto { Count = _products.Count };
 
             return result;
         }

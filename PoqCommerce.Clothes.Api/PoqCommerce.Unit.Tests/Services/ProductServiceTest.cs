@@ -32,7 +32,8 @@ namespace PoqCommerce.Unit.Tests.Services
         {
             // Arrange
             var httpClient = A.Fake<IMockyHttpClient>();
-            var productService = new ProductService(httpClient);
+            var uow = A.Fake<IUnitOfWork>();
+            var productService = new ProductService(httpClient, uow);
 
             var fakeResponse = new MockyProductsResponse
             {
@@ -44,7 +45,7 @@ namespace PoqCommerce.Unit.Tests.Services
             A.CallTo(() => httpClient.GetAllProductsAsync()).Returns(fakeResponse);
 
             // Act
-            var result = await productService.FilterProducts(filter);
+            var result = await productService.FilterProductsAsync(filter);
 
             // Assert
             result.Should().NotBeNull();
@@ -61,7 +62,8 @@ namespace PoqCommerce.Unit.Tests.Services
         {
             // Arrange
             var httpClient = A.Fake<IMockyHttpClient>();
-            var productService = new ProductService(httpClient);
+            var uow = A.Fake<IUnitOfWork>();
+            var productService = new ProductService(httpClient, uow);
 
             var fakeResponse = new MockyProductsResponse
             {
@@ -73,7 +75,7 @@ namespace PoqCommerce.Unit.Tests.Services
             A.CallTo(() => httpClient.GetAllProductsAsync()).Returns(fakeResponse);
 
             // Act
-            var result = await productService.FilterProducts(filter);
+            var result = await productService.FilterProductsAsync(filter);
 
             // Assert
             result.Should().NotBeNull();
