@@ -5,5 +5,6 @@ namespace PoqCommerce.Application.Interfaces
 {
     public interface IProductRepository : IGenericRepository<Product>
     {
+        void BulkInsert(IEnumerable<Product> products);
     }
 }

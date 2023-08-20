@@ -1,28 +1,53 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PoqCommerce.Application.Interfaces;
+using PoqCommerce.Persistence.EF;
 
 namespace PoqCommerce.Persistence
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly DbContext _context;
+        private readonly EfDbContext _dbContext;
+        private bool _disposed = false;
 
-        public UnitOfWork(DbContext context, IProductService product)
+        public UnitOfWork(EfDbContext context, IProductRepository product)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _dbContext = context;
             Product = product;
         }
 
-        public IProductService Product { get; }
+        public IProductRepository Product { get; }
 
-        public void Save()
+        public void Commit()
         {
-            _context.SaveChanges();
+            _dbContext.SaveChanges();
+        }
+
+        public void Rollback()
+        {
+            foreach (var entry in _dbContext.ChangeTracker.Entries())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.State = EntityState.Detached;
+                        break;
+                }
+            }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed && disposing)
+            {
+                _dbContext.Dispose();
+            }
+            _disposed = true;
         }
 
         public void Dispose()
         {
-            _context.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

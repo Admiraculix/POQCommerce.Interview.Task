@@ -11,8 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Persistance.Abstractions\Persistance.Abstractions.csproj" />
-    <ProjectReference Include="..\PoqCommerce.Application\PoqCommerce.Application.csproj" />
     <ProjectReference Include="..\PoqCommerce.Persistence.EF\PoqCommerce.Persistence.EF.csproj" />
   </ItemGroup>
 

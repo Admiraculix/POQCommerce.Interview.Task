@@ -8,12 +8,12 @@ namespace Persistance.Abstractions
     public abstract class GenericRepository<T> : IGenericRepository<T>
         where T : class
     {
-        private readonly DbContext _context;
-        private readonly DbSet<T> _dbSet;
+        protected readonly DbContext _context;
+        protected readonly DbSet<T> _dbSet;
 
         protected GenericRepository(DbContext context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _context = context;
             _dbSet = _context.Set<T>();
         }
 
