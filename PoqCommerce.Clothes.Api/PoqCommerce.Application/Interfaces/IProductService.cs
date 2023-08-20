@@ -1,6 +1,5 @@
 ﻿using PoqCommerce.Application.Models;
 using PoqCommerce.Application.Models.DTOs;
-using PoqCommerce.Domain;
 
 namespace PoqCommerce.Application.Interfaces
 {
