@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Persistance.Abstractions\Persistance.Abstractions.csproj" />
     <ProjectReference Include="..\PoqCommerce.Domain\PoqCommerce.Domain.csproj" />
   </ItemGroup>
 

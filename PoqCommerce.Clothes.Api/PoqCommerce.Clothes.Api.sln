@@ -31,7 +31,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoqCommerce.Mocky.Io", "Poq
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoqCommerce.Tests.Architecture", "PoqCommerce.Tests.Architecture\PoqCommerce.Tests.Architecture.csproj", "{BC85E4BF-4FB0-4712-839E-00E8748E683B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoqCommerce.Unit.Tests", "PoqCommerce.Unit.Tests\PoqCommerce.Unit.Tests.csproj", "{3FA9402F-9E89-4DBD-9BC4-3ACE793193B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoqCommerce.Unit.Tests", "PoqCommerce.Unit.Tests\PoqCommerce.Unit.Tests.csproj", "{3FA9402F-9E89-4DBD-9BC4-3ACE793193B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistance.Abstractions", "Persistance.Abstractions\Persistance.Abstractions.csproj", "{ACC2AE2E-CAAF-400E-96FA-A150A38D4378}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoqCommerce.Persistence", "PoqCommerce.Persistence\PoqCommerce.Persistence.csproj", "{B5DEE66C-0117-4E29-A671-E544BD35A17E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoqCommerce.Persistence.EF", "PoqCommerce.Persistence.EF\PoqCommerce.Persistence.EF.csproj", "{BD7DD1D3-6B5B-48ED-8073-7DB7FCA630AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +69,18 @@ Global
 		{3FA9402F-9E89-4DBD-9BC4-3ACE793193B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FA9402F-9E89-4DBD-9BC4-3ACE793193B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3FA9402F-9E89-4DBD-9BC4-3ACE793193B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACC2AE2E-CAAF-400E-96FA-A150A38D4378}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACC2AE2E-CAAF-400E-96FA-A150A38D4378}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACC2AE2E-CAAF-400E-96FA-A150A38D4378}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACC2AE2E-CAAF-400E-96FA-A150A38D4378}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5DEE66C-0117-4E29-A671-E544BD35A17E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5DEE66C-0117-4E29-A671-E544BD35A17E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5DEE66C-0117-4E29-A671-E544BD35A17E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5DEE66C-0117-4E29-A671-E544BD35A17E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD7DD1D3-6B5B-48ED-8073-7DB7FCA630AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD7DD1D3-6B5B-48ED-8073-7DB7FCA630AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD7DD1D3-6B5B-48ED-8073-7DB7FCA630AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD7DD1D3-6B5B-48ED-8073-7DB7FCA630AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -81,6 +99,9 @@ Global
 		{45D6C455-A632-4C45-951B-BC3F73583E99} = {AA6920A7-5859-4C9C-9B2A-9D8BB332B9DC}
 		{BC85E4BF-4FB0-4712-839E-00E8748E683B} = {0A586157-CE11-4A33-9825-A159E6BC6C5B}
 		{3FA9402F-9E89-4DBD-9BC4-3ACE793193B2} = {0A586157-CE11-4A33-9825-A159E6BC6C5B}
+		{ACC2AE2E-CAAF-400E-96FA-A150A38D4378} = {8C53D929-0D57-4036-8C1E-C8FFE5896CC1}
+		{B5DEE66C-0117-4E29-A671-E544BD35A17E} = {AA6920A7-5859-4C9C-9B2A-9D8BB332B9DC}
+		{BD7DD1D3-6B5B-48ED-8073-7DB7FCA630AF} = {AA6920A7-5859-4C9C-9B2A-9D8BB332B9DC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FB08CCB1-2E6F-400F-ACA9-B4B6768C2260}

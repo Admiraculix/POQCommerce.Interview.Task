@@ -1,8 +1,10 @@
 using FakeItEasy;
 using FluentAssertions;
 using PoqCommerce.Application;
+using PoqCommerce.Application.Extensions;
 using PoqCommerce.Application.Interfaces;
 using PoqCommerce.Application.Models;
+using PoqCommerce.Application.Models.DTOs;
 using PoqCommerce.Application.Models.Responses;
 using PoqCommerce.Domain;
 
@@ -27,27 +29,38 @@ namespace PoqCommerce.Unit.Tests.Services
             new Product { Title = "A Orange Trouser", Price = 25, Sizes = new List<string> { "medium", }, Description = "This trouser perfectly pairs with a white shirt." },
         };
 
+
         [Fact]
         public async Task FilterProducts_WithFilters_AppliesFiltersAndReturnsFilteredProducts()
         {
             // Arrange
             var httpClient = A.Fake<IMockyHttpClient>();
-            var productService = new ProductService(httpClient);
+            var unitOfWorkFake = A.Fake<IUnitOfWork>();
+            var productRepositoryFake = A.Fake<IProductRepository>();
+            var dtoFactory = A.Fake<IFilterObjectDtoFactory>();
+            A.CallTo(() => unitOfWorkFake.Product).Returns(productRepositoryFake);
 
-            var fakeResponse = new MockyProductsResponse
+            var sut = new ProductService(httpClient,unitOfWorkFake, dtoFactory);
+            var filter = new FilterObject { MinPrice = 15, MaxPrice = 25, Size = "medium", Highlight = "red" };
+            var filterDto = new FilterObjectDto
             {
-                Products = _products
+                MinPrice = _products.Min(p => p?.Price),
+                MaxPrice = _products.Max(p => p?.Price),
+                Sizes = _products.SelectMany(p => p.Sizes).Distinct().ToList(),
+                CommonWords = _products.GetCommonWords()
             };
 
-            var filter = new FilterObject { MinPrice = 15, MaxPrice = 25, Size = "medium", Highlight = "red" };
-
-            A.CallTo(() => httpClient.GetAllProductsAsync()).Returns(fakeResponse);
-
+            var withMediumSizeProducts = _products.Where(x => x.Sizes.Contains("medium")).AsQueryable();
+            A.CallTo(() => productRepositoryFake.GetAll()).Returns(_products.AsQueryable());
+            A.CallTo(() => productRepositoryFake.GetProductsBySize("medium")).Returns(withMediumSizeProducts);
+            A.CallTo(() => dtoFactory.CreateFilterObjectDto()).Returns(filterDto);
             // Act
-            var result = await productService.FilterProducts(filter);
+            var result = await sut.FilterProductsAsync(filter);
 
             // Assert
             result.Should().NotBeNull();
+            result.Products.Should().NotBeNull();
+            result.Products.Should().NotBeEmpty();
             result.Products.Should().HaveCount(1);
             result.Products[0].Title.Should().Be("A Orange Trouser");
             result.Filter.MinPrice.Should().Be(1);
@@ -61,19 +74,28 @@ namespace PoqCommerce.Unit.Tests.Services
         {
             // Arrange
             var httpClient = A.Fake<IMockyHttpClient>();
-            var productService = new ProductService(httpClient);
+            var unitOfWorkFake = A.Fake<IUnitOfWork>();
+            var productRepositoryFake = A.Fake<IProductRepository>();
+            var dtoFactory = A.Fake<IFilterObjectDtoFactory>();
+            A.CallTo(() => unitOfWorkFake.Product).Returns(productRepositoryFake);
 
-            var fakeResponse = new MockyProductsResponse
-            {
-                Products = _products
-            };
+            var sut = new ProductService(httpClient, unitOfWorkFake, dtoFactory);
 
             var filter = new FilterObject();
 
-            A.CallTo(() => httpClient.GetAllProductsAsync()).Returns(fakeResponse);
+            var filterDto = new FilterObjectDto
+            {
+                MinPrice = _products.Min(p => p?.Price),
+                MaxPrice = _products.Max(p => p?.Price),
+                Sizes = _products.SelectMany(p => p.Sizes).Distinct().ToList(),
+                CommonWords = _products.GetCommonWords()
+            };
+
+            A.CallTo(() => productRepositoryFake.GetAll()).Returns(_products.AsQueryable());
+            A.CallTo(() => dtoFactory.CreateFilterObjectDto()).Returns(filterDto);
 
             // Act
-            var result = await productService.FilterProducts(filter);
+            var result = await sut.FilterProductsAsync(filter);
 
             // Assert
             result.Should().NotBeNull();

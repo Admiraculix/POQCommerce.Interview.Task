@@ -5,6 +5,8 @@ namespace PoqCommerce.Application.Interfaces
 {
     public interface IProductService
     {
-        Task<FilteredProductsDto> FilterProducts(FilterObject filter);
+        Task<SeedResultDto> SeedProductsAsync();
+
+        Task<FilteredProductsDto> FilterProductsAsync(FilterObject filter);
     }
 }
