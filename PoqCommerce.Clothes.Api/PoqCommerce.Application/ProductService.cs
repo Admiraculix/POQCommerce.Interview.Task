@@ -10,11 +10,16 @@ namespace PoqCommerce.Application
     {
         private readonly IMockyHttpClient _httpClient;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IFilterObjectDtoFactory _filterObjectDtoFactory;
 
-        public ProductService(IMockyHttpClient httpClient, IUnitOfWork unitOfWork)
+        public ProductService(
+            IMockyHttpClient httpClient,
+            IUnitOfWork unitOfWork,
+            IFilterObjectDtoFactory filterObjectDtoFactory)
         {
             _httpClient = httpClient;
             _unitOfWork = unitOfWork;
+            _filterObjectDtoFactory = filterObjectDtoFactory;
         }
 
         public async Task<FilteredProductsDto> FilterProductsAsync(FilterObject filter)
@@ -38,14 +43,6 @@ namespace PoqCommerce.Application
 
             var filteredProducts = query.ToList();
 
-            var filterObject = new FilterObjectDto
-            {
-                MinPrice = filteredProducts.Min(p => p?.Price),
-                MaxPrice = filteredProducts.Max(p => p?.Price),
-                Sizes = filteredProducts.SelectMany(p => p.Sizes).Distinct().ToList(),
-                CommonWords = GetCommonWords(filteredProducts)
-            };
-
             var result = new FilteredProductsDto
             {
                 Products = filteredProducts.Select(p => new Product
@@ -56,7 +53,7 @@ namespace PoqCommerce.Application
                     Sizes = p.Sizes,
                     Description = p.Description
                 }).ToList(),
-                Filter = filterObject
+                Filter = _filterObjectDtoFactory.CreateFilterObjectDto()
             };
 
             return result;
@@ -97,45 +94,6 @@ namespace PoqCommerce.Application
             }
 
             return products;
-        }
-
-        private List<string> GetCommonWords(List<Product> products)
-        {
-            var wordFrequency = new Dictionary<string, int>();
-
-            foreach (var product in products)
-            {
-                var descriptionWithoutTags = StripHtmlTags(product.Description.ToLower());
-                var words = descriptionWithoutTags.Split(new[] { ' ', '.', ',', ';', ':', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (var word in words)
-                {
-                    if (word.Length > 2) // Exclude words with less than three characters
-                    {
-                        if (!wordFrequency.ContainsKey(word))
-                        {
-                            wordFrequency[word] = 1;
-                        }
-                        else
-                        {
-                            wordFrequency[word]++;
-                        }
-                    }
-                }
-            }
-
-            var mostCommonWords = wordFrequency.OrderByDescending(kv => kv.Value)
-                                              .Skip(5) // Exclude the most common five
-                                              .Take(10) // Take the next ten
-                                              .Select(kv => kv.Key)
-                                              .ToList();
-
-            return mostCommonWords;
-        }
-
-        private string StripHtmlTags(string input)
-        {
-            return Regex.Replace(input, "<.*?>", string.Empty);
         }
     }
 }
