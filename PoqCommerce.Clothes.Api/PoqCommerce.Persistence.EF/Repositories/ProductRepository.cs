@@ -1,8 +1,10 @@
 ﻿using EFCore.BulkExtensions;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Persistance.Abstractions;
 using PoqCommerce.Application.Interfaces;
 using PoqCommerce.Domain;
+
 
 namespace PoqCommerce.Persistence.EF.Repositories
 {
@@ -16,6 +18,19 @@ namespace PoqCommerce.Persistence.EF.Repositories
         public void BulkInsert(IEnumerable<Product> products)
         {
              _context.BulkInsert(products);
+        }
+
+        public List<Product> GetProductsBySize(string size)
+        {
+            var sizeParameter = new SqlParameter("@size", System.Data.SqlDbType.NVarChar)
+            {
+                Value = size
+            };
+
+            var query = _dbSet.FromSqlRaw("SELECT * FROM Products WHERE @size LIKE '%' + Sizes + '%'", sizeParameter)
+                .ToList();
+
+            return query;
         }
     }
 }

@@ -9,7 +9,6 @@ namespace PoqCommerce.Application
     public class ProductService : IProductService
     {
         private readonly IMockyHttpClient _httpClient;
-        private List<Product> _products = new List<Product>();
         private readonly IUnitOfWork _unitOfWork;
 
         public ProductService(IMockyHttpClient httpClient, IUnitOfWork unitOfWork)
@@ -20,35 +19,38 @@ namespace PoqCommerce.Application
 
         public async Task<FilteredProductsDto> FilterProductsAsync(FilterObject filter)
         {
-            var response = await _httpClient.GetAllProductsAsync();
-            _products = response.Products.ToList();
-
-            var filteredProducts = _products;
+            var query = _unitOfWork.Product.GetAll();
 
             if (filter.MinPrice.HasValue)
-                filteredProducts = filteredProducts.Where(p => p.Price >= filter.MinPrice.Value).ToList();
+                query = query.Where(p => p.Price >= filter.MinPrice.Value);
 
             if (filter.MaxPrice.HasValue)
-                filteredProducts = filteredProducts.Where(p => p.Price <= filter.MaxPrice.Value).ToList();
+                query = query.Where(p => p.Price <= filter.MaxPrice.Value);
 
             if (!string.IsNullOrWhiteSpace(filter.Size))
-                filteredProducts = filteredProducts.Where(p => p.Sizes.Contains(filter.Size)).ToList();
+            {
+                //query = query.Where(p => p.Sizes.Contains(filter.Size));
+                query =  _unitOfWork.Product.GetProductsBySize(filter.Size).AsQueryable();
+            }
 
             if (!string.IsNullOrWhiteSpace(filter.Highlight))
-                filteredProducts = ApplyHighlight(filteredProducts, filter.Highlight);
+                query = ApplyHighlight(query, filter.Highlight);
+
+            var filteredProducts = query.ToList();
 
             var filterObject = new FilterObjectDto
             {
-                MinPrice = _products.Min(p => p.Price),
-                MaxPrice = _products.Max(p => p.Price),
-                Sizes = _products.SelectMany(p => p.Sizes).Distinct().ToList(),
-                CommonWords = GetCommonWords()
+                MinPrice = filteredProducts.Min(p => p?.Price),
+                MaxPrice = filteredProducts.Max(p => p?.Price),
+                Sizes = filteredProducts.SelectMany(p => p.Sizes).Distinct().ToList(),
+                CommonWords = GetCommonWords(filteredProducts)
             };
 
             var result = new FilteredProductsDto
             {
                 Products = filteredProducts.Select(p => new Product
                 {
+                    Id = p.Id,
                     Title = p.Title,
                     Price = p.Price,
                     Sizes = p.Sizes,
@@ -65,39 +67,43 @@ namespace PoqCommerce.Application
             var enitites = _unitOfWork.Product.GetAll();
             if (enitites.Any())
             {
-                return new SeedResultDto { Count  = enitites.Count()} ;
+                return new SeedResultDto { Count = enitites.Count() };
             }
 
             var response = await _httpClient.GetAllProductsAsync();
-            _products = response.Products.ToList();
+            var products = response.Products.ToList();
 
-            _unitOfWork.Product.BulkInsert(_products);
+            _unitOfWork.Product.BulkInsert(products);
             _unitOfWork.Commit();
-            var result = new SeedResultDto { Count = _products.Count };
+            var result = new SeedResultDto { Count = products.Count };
 
             return result;
         }
 
-        private List<Product> ApplyHighlight(List<Product> products, string highlight)
+        private IQueryable<Product> ApplyHighlight(IQueryable<Product> products, string highlight)
         {
             var highlightedWords = highlight.Split(',').Select(h => h.Trim().ToLower()).ToList();
 
-            foreach (var product in products)
+            foreach (var highlightedWord in highlightedWords)
             {
-                foreach (var highlightedWord in highlightedWords)
+                products = products.Select(p => new Product
                 {
-                    product.Description = product.Description.Replace(highlightedWord, $"<em>{highlightedWord}</em>", StringComparison.OrdinalIgnoreCase);
-                }
+                    Id = p.Id,
+                    Title = p.Title,
+                    Description = p.Description.Replace(highlightedWord, $"<em>{highlightedWord}</em>", StringComparison.OrdinalIgnoreCase),
+                    Price = p.Price,
+                    Sizes = p.Sizes
+                });
             }
 
             return products;
         }
 
-        private List<string> GetCommonWords()
+        private List<string> GetCommonWords(List<Product> products)
         {
             var wordFrequency = new Dictionary<string, int>();
 
-            foreach (var product in _products)
+            foreach (var product in products)
             {
                 var descriptionWithoutTags = StripHtmlTags(product.Description.ToLower());
                 var words = descriptionWithoutTags.Split(new[] { ' ', '.', ',', ';', ':', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
