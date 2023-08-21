@@ -9,7 +9,10 @@ namespace PoqCommerce.Tests.Architecture
         private const string ApplicationNamespace = "PoqCommerce.Application";
         private const string DomainNamespace = "PoqCommerce.Domain";
         private const string PresentationNamespace = "PoqCommerce.Api";
-        private const string InfrastructureNamespace = "PoqCommerce.Mocky.Io";
+        private const string InfrastructureMockyNamespace = "PoqCommerce.Mocky.Io";
+        private const string InfrastructurePersistenceNamespace = "PoqCommerce.Persistence";
+        private const string InfrastructurePersistenceEfNamespace = "PoqCommerce.Persistence.EF";
+        private const string SharedNamespace = "Persistence.Abstraction";
 
         [Fact]
         public void Domain_Should_Not_HaveDependencyOnOtherProjects()
@@ -20,7 +23,10 @@ namespace PoqCommerce.Tests.Architecture
             var otherProjects = new[] {
                 ApplicationNamespace,
                 PresentationNamespace,
-                InfrastructureNamespace,
+                InfrastructureMockyNamespace,
+                InfrastructurePersistenceNamespace,
+                InfrastructurePersistenceEfNamespace,
+                SharedNamespace
             };
 
             // Act
@@ -42,7 +48,9 @@ namespace PoqCommerce.Tests.Architecture
 
             var otherProjects = new[] {
                 PresentationNamespace,
-                InfrastructureNamespace,
+                InfrastructureMockyNamespace,
+                InfrastructurePersistenceNamespace,
+                InfrastructurePersistenceEfNamespace,
             };
 
             // Act
@@ -56,21 +64,40 @@ namespace PoqCommerce.Tests.Architecture
             testResult.IsSuccessful.Should().BeTrue();
         }
 
-        [Fact (Skip = "Something is wrong hire")]
+        [Fact]
         public void Presentation_Should_HaveDependencyOnOtherProjects()
         {
             // Arrange
             Assembly assembly = Assembly.Load(PresentationNamespace);
 
+            // Act
+            var testResult = Types
+            .InAssembly(assembly)
+            .Should()
+            .HaveDependencyOnAll()
+            .GetResult();
+
+            //Assert
+            testResult.IsSuccessful.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Infrastructure_Mocky_Should_Not_HaveDependencyOnOtherProjects()
+        {
+            // Arrange
+            Assembly assembly = Assembly.Load(InfrastructureMockyNamespace);
+
             var otherProjects = new[] {
-                ApplicationNamespace,
-                InfrastructureNamespace
+                PresentationNamespace,
+                DomainNamespace,
+                InfrastructurePersistenceNamespace,
+                InfrastructurePersistenceEfNamespace
             };
 
             // Act
             var testResult = Types
             .InAssembly(assembly)
-            .Should()
+            .ShouldNot()
             .HaveDependencyOnAll(otherProjects)
             .GetResult();
 
@@ -79,14 +106,73 @@ namespace PoqCommerce.Tests.Architecture
         }
 
         [Fact]
-        public void Infrastructure_Should_Not_HaveDependencyOnOtherProjects()
+        public void Infrastructure_PersistenceEf_Should_Not_HaveDependencyOnOtherProjects()
         {
             // Arrange
-            Assembly assembly = Assembly.Load(InfrastructureNamespace);
+            Assembly assembly = Assembly.Load(InfrastructurePersistenceEfNamespace);
 
             var otherProjects = new[] {
                 PresentationNamespace,
-                DomainNamespace
+                DomainNamespace,
+                InfrastructureMockyNamespace,
+                InfrastructurePersistenceNamespace,
+            };
+
+            var referenceProjects = new[] {
+                SharedNamespace,
+                ApplicationNamespace
+            };
+
+            // Act
+            var testResult = Types
+            .InAssembly(assembly)
+            .ShouldNot()
+            .HaveDependencyOnAll(otherProjects)
+            .And().HaveDependencyOnAll(referenceProjects)
+            .GetResult();
+
+            //Assert
+            testResult.IsSuccessful.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Infrastructure_Persistence_Should_Not_HaveDependencyOnOtherProjects()
+        {
+            // Arrange
+            Assembly assembly = Assembly.Load(InfrastructurePersistenceNamespace);
+
+            var otherProjects = new[] {
+                PresentationNamespace,
+                DomainNamespace,
+                InfrastructureMockyNamespace,
+                SharedNamespace,
+                ApplicationNamespace
+            };
+
+            // Act
+            var testResult = Types
+            .InAssembly(assembly)
+            .ShouldNot()
+            .HaveDependencyOnAll(otherProjects)
+            .GetResult();
+
+            //Assert
+            testResult.IsSuccessful.Should().BeTrue();
+        }
+
+        [Fact]
+        public void NuGet_Persistence_Should_Not_HaveDependencyOnOtherProjects()
+        {
+            // Arrange
+            Assembly assembly = Assembly.Load(InfrastructurePersistenceNamespace);
+
+            var otherProjects = new[] {
+                ApplicationNamespace,
+                DomainNamespace,
+                PresentationNamespace,
+                InfrastructureMockyNamespace,
+                InfrastructurePersistenceNamespace,
+                InfrastructurePersistenceEfNamespace,
             };
 
             // Act
