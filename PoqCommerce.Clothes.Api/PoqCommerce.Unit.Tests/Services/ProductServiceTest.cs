@@ -110,7 +110,7 @@ namespace PoqCommerce.Unit.Tests.Services
             var result = await productService.FilterProductsAsync(filter);
 
             // Assert
-            Assert.NotNull(result));
+            Assert.NotNull(result);
             Assert.NotNull(result.Products);
             Assert.NotEmpty(result.Products);
             // Add more specific assertions based on your expected results

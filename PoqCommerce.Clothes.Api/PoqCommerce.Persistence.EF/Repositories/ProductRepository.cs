@@ -20,15 +20,14 @@ namespace PoqCommerce.Persistence.EF.Repositories
              _context.BulkInsert(products);
         }
 
-        public List<Product> GetProductsBySize(string size)
+        public IQueryable<Product> GetProductsBySize(string size)
         {
             var sizeParameter = new SqlParameter("@size", System.Data.SqlDbType.NVarChar)
             {
                 Value = size
             };
 
-            var query = _dbSet.FromSqlRaw("SELECT * FROM Products WHERE @size LIKE '%' + Sizes + '%'", sizeParameter)
-                .ToList();
+            var query = _dbSet.FromSqlRaw("SELECT * FROM Products WHERE CHARINDEX(@size, Sizes) > 0", sizeParameter);
 
             return query;
         }

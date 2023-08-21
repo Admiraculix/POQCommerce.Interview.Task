@@ -29,8 +29,8 @@ namespace PoqCommerce.Application
 
             if (!string.IsNullOrWhiteSpace(filter.Size))
             {
-                //query = query.Where(p => p.Sizes.Contains(filter.Size));
-                query =  _unitOfWork.Product.GetProductsBySize(filter.Size).AsQueryable();
+                var sizeQuery = _unitOfWork.Product.GetProductsBySize(filter.Size).AsQueryable();
+                query = query.Intersect(sizeQuery);
             }
 
             if (!string.IsNullOrWhiteSpace(filter.Highlight))
