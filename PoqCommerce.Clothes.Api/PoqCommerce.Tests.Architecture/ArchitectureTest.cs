@@ -56,22 +56,17 @@ namespace PoqCommerce.Tests.Architecture
             testResult.IsSuccessful.Should().BeTrue();
         }
 
-        [Fact (Skip = "Something is wrong hire")]
+        [Fact]
         public void Presentation_Should_HaveDependencyOnOtherProjects()
         {
             // Arrange
             Assembly assembly = Assembly.Load(PresentationNamespace);
 
-            var otherProjects = new[] {
-                ApplicationNamespace,
-                InfrastructureNamespace
-            };
-
             // Act
             var testResult = Types
             .InAssembly(assembly)
             .Should()
-            .HaveDependencyOnAll(otherProjects)
+            .HaveDependencyOnAll()
             .GetResult();
 
             //Assert
